@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Connect - Find Your Sound</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #e94560;
+            --highlight: #0f3460;
+            --text: #eaeaea;
+            --muted: #a0a0a0;
+        }
+
+        body {
+            background-color: var(--primary);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            padding: 100px 0 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(233, 69, 96, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--text), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .search-box {
+            background: var(--secondary);
+            border: 2px solid var(--highlight);
+            border-radius: 50px;
+            padding: 8px 24px;
+            max-width: 500px;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(233, 69, 96, 0.2);
+        }
+
+        .search-box input {
+            background: transparent;
+            border: none;
+            color: var(--text);
+            outline: none;
+            width: 100%;
+        }
+
+        .search-box input::placeholder {
+            color: var(--muted);
+        }
+
+        .genre-pill {
+            display: inline-block;
+            padding: 8px 20px;
+            border: 2px solid var(--highlight);
+            border-radius: 50px;
+            margin: 0 6px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .genre-pill:hover,
+        .genre-pill.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--text);
+            transform: scale(1.05);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        .musician-card {
+            background: var(--secondary);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .musician-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: var(--accent);
+        }
+
+        .musician-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent);
+            margin-bottom: 16px;
+        }
+
+        .musician-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .musician-instrument {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        .musician-location {
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+        }
+
+        .musician-location i {
+            color: var(--accent);
+        }
+
+        .tag {
+            display: inline-block;
+            background: var(--highlight);
+            color: var(--text);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin: 4px 2px;
+        }
+
+        .btn-connect {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-top: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-connect:hover {
+            background: #d13a52;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, var(--accent) 0%, #d13a52 100%);
+            padding: 80px 0;
+            text-align: center;
+            border-radius: 24px;
+            margin: 60px 0;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+
+        footer {
+            background: var(--secondary);
+            padding: 40px 0;
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        footer a {
+            color: var(--muted);
+            text-decoration: none;
+            margin: 0 16px;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: var(--accent);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+
+        .modal-content {
+            background: var(--secondary);
+            border: 1px solid var(--highlight);
+            border-radius: 16px;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--highlight);
+            padding: 20px 24px;
+        }
+
+        .modal-title {
+            color: var(--text);
+        }
+
+        .btn-close {
+            filter: invert(1);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .form-control {
+            background: var(--primary);
+            border: 2px solid var(--highlight);
+            color: var(--text);
+            padding: 12px 16px;
+            border-radius: 10px;
+        }
+
+        .form-control:focus {
+            background: var(--primary);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(233, 69, 96, 0.2);
+            color: var(--text);
+        }
+
+        .form-control::placeholder {
+            color: var(--muted);
+        }
+
+        .form-label {
+            color: var(--text);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .btn-login {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            width: 100%;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login:hover {
+            background: #d13a52;
+            transform: translateY(-2px);
+        }
+
+        .social-login {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-social {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid var(--highlight);
+            background: transparent;
+            color: var(--text);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-social:hover {
+            border-color: var(--accent);
+            background: var(--highlight);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: var(--muted);
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--highlight);
+        }
+
+        .divider span {
+            padding: 0 16px;
+            font-size: 0.85rem;
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--highlight);
+            padding: 16px 24px;
+            justify-content: center;
+        }
+
+        .modal-footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .modal-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+        }
+
+        .nav-link {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg" style="background: var(--secondary);">
+        <div class="container">
+            <a class="navbar-brand text-white fw-bold" href="#">
+                <i class="bi bi-music-note-beamed me-2" style="color: var(--accent);"></i>
+                Music Connect
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link text-white" href="#">Discover</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#">Browse</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#">Messages</a></li>
+                    <li class="nav-item" id="loginNavItem"><a class="nav-link text-white" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></li>
+                    <li class="nav-item" id="joinNavItem"><a class="btn btn-connect ms-3" data-bs-toggle="modal" data-bs-target="#loginModal">Join Now</a></li>
+                    <li class="nav-item user-menu d-none" id="userMenu">
+                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop" alt="User" class="user-avatar">
+                        <a class="nav-link text-white" id="userName">Profile</a>
+                        <a class="nav-link text-white" onclick="logout()">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <div class="row justify-content-center text-center">
+                <div class="col-lg-8">
+                    <h1 class="hero-title mb-4 fade-in">Find Your Sound. Connect with Musicians.</h1>
+                    <p class="lead mb-5 fade-in delay-1" style="color: var(--muted);">Join a vibrant community of artists, bands, and producers ready to collaborate and create magic together.</p>
+                    <div class="search-box mx-auto fade-in delay-2">
+                        <i class="bi bi-search text-white me-3"></i>
+                        <input type="text" placeholder="Search musicians, instruments, genres...">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="container">
+            <h2 class="section-title">Browse by Genre</h2>
+            <div class="text-center">
+                <span class="genre-pill active" data-genre="all">All</span>
+                <span class="genre-pill" data-genre="rock">Rock</span>
+                <span class="genre-pill" data-genre="jazz">Jazz</span>
+                <span class="genre-pill" data-genre="electronic">Electronic</span>
+                <span class="genre-pill" data-genre="hiphop">Hip Hop</span>
+                <span class="genre-pill" data-genre="classical">Classical</span>
+                <span class="genre-pill" data-genre="indie">Indie</span>
+                <span class="genre-pill" data-genre="metal">Metal</span>
+                <span class="genre-pill" data-genre="pop">Pop</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5">
+        <div class="container">
+            <h2 class="section-title">Featured Musicians</h2>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="musician-card">
+                        <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=200&h=200&fit=crop" alt="Marcus Chen" class="musician-avatar">
+                        <h4 class="musician-name">Marcus Chen</h4>
+                        <p class="musician-instrument">Electric Guitar & Bass</p>
+                        <p class="musician-location"><i class="bi bi-geo-alt-fill me-1"></i> Los Angeles, CA</p>
+                        <div>
+                            <span class="tag">Rock</span>
+                            <span class="tag">Blues</span>
+                            <span class="tag">Jazz</span>
+                        </div>
+                        <button class="btn btn-connect">Connect</button>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="musician-card">
+                        <img src="https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=200&h=200&fit=crop" alt="Sarah Mitchell" class="musician-avatar">
+                        <h4 class="musician-name">Sarah Mitchell</h4>
+                        <p class="musician-instrument">Vocals & Piano</p>
+                        <p class="musician-location"><i class="bi bi-geo-alt-fill me-1"></i> Nashville, TN</p>
+                        <div>
+                            <span class="tag">Pop</span>
+                            <span class="tag">Indie</span>
+                            <span class="tag">Acoustic</span>
+                        </div>
+                        <button class="btn btn-connect">Connect</button>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="musician-card">
+                        <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop" alt="DJ Phantom" class="musician-avatar">
+                        <h4 class="musician-name">DJ Phantom</h4>
+                        <p class="musician-instrument">Electronic Production</p>
+                        <p class="musician-location"><i class="bi bi-geo-alt-fill me-1"></i> Miami, FL</p>
+                        <div>
+                            <span class="tag">Electronic</span>
+                            <span class="tag">House</span>
+                            <span class="tag">Techno</span>
+                        </div>
+                        <button class="btn btn-connect">Connect</button>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="musician-card">
+                        <img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=200&h=200&fit=crop" alt="Luna Rodriguez" class="musician-avatar">
+                        <h4 class="musician-name">Luna Rodriguez</h4>
+                        <p class="musician-instrument">Cello & Violin</p>
+                        <p class="musician-location"><i class="bi bi-geo-alt-fill me-1"></i> New York, NY</p>
+                        <div>
+                            <span class="tag">Classical</span>
+                            <span class="tag">Film</span>
+                            <span class="tag">Neo-Classical</span>
+                        </div>
+                        <button class="btn btn-connect">Connect</button>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="musician-card">
+                        <img src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=200&h=200&fit=crop" alt="Mike Torres" class="musician-avatar">
+                        <h4 class="musician-name">Mike Torres</h4>
+                        <p class="musician-instrument">Drums & Percussion</p>
+                        <p class="musician-location"><i class="bi bi-geo-alt-fill me-1"></i> Austin, TX</p>
+                        <div>
+                            <span class="tag">Metal</span>
+                            <span class="tag">Rock</span>
+                            <span class="tag">Funk</span>
+                        </div>
+                        <button class="btn btn-connect">Connect</button>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="musician-card">
+                        <img src="https://images.unsplash.com/photo-1460723237483-7a6dc9d0b212?w=200&h=200&fit=crop" alt="Aisha Patel" class="musician-avatar">
+                        <h4 class="musician-name">Aisha Patel</h4>
+                        <p class="musician-instrument">Vocals & Songwriting</p>
+                        <p class="musician-location"><i class="bi bi-geo-alt-fill me-1"></i> Chicago, IL</p>
+                        <div>
+                            <span class="tag">R&B</span>
+                            <span class="tag">Hip Hop</span>
+                            <span class="tag">Soul</span>
+                        </div>
+                        <button class="btn btn-connect">Connect</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container">
+        <div class="cta-section">
+            <div class="container py-5">
+                <h2>Ready to Make Music Together?</h2>
+                <p class="lead mb-4">Join thousands of musicians already collaborating on Music Connect</p>
+                <a href="#" class="btn btn-light btn-lg px-5 py-3 fw-bold">Create Your Profile</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p class="mb-3" style="color: var(--muted);">
+                <i class="bi bi-music-note-beamed me-2" style="color: var(--accent);"></i>
+                Music Connect
+            </p>
+            <div>
+                <a href="#">About</a>
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">Contact</a>
+            </div>
+            <p class="mt-4" style="color: var(--muted); font-size: 0.85rem;">2024 Music Connect. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">
+                        <i class="bi bi-music-note-beamed me-2" style="color: var(--accent);"></i>
+                        Welcome Back
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="loginEmail" placeholder="your@email.com" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password" required>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="rememberMe">
+                                <label class="form-check-label" for="rememberMe" style="color: var(--muted);">Remember me</label>
+                            </div>
+                            <a href="#" style="color: var(--accent); font-size: 0.9rem;">Forgot password?</a>
+                        </div>
+                        <button type="submit" class="btn btn-login">Sign In</button>
+                        
+                        <div class="divider"><span>or continue with</span></div>
+                        
+                        <div class="social-login">
+                            <button type="button" class="btn-social" onclick="googleLogin()">
+                                <i class="bi bi-google"></i>
+                                Google
+                            </button>
+                            <button type="button" class="btn-social" onclick="alert('GitHub OAuth coming soon!')">
+                                <i class="bi bi-github"></i>
+                                GitHub
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <span style="color: var(--muted);">Don't have an account?</span>
+                    <a href="#" onclick="switchToSignup()">Sign up</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="signupModalLabel">
+                        <i class="bi bi-music-note-beamed me-2" style="color: var(--accent);"></i>
+                        Join Music Connect
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="signupForm">
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="signupName" placeholder="Your name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="signupEmail" placeholder="your@email.com" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" id="signupPassword" placeholder="Create a password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">I am a...</label>
+                            <select class="form-control" id="userType">
+                                <option value="musician">Musician</option>
+                                <option value="producer">Producer</option>
+                                <option value="band">Band</option>
+                                <option value="venue">Venue</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-login">Create Account</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <span style="color: var(--muted);">Already have an account?</span>
+                    <a href="#" onclick="switchToLogin()">Sign in</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelectorAll('.genre-pill').forEach(pill => {
+            pill.addEventListener('click', function() {
+                document.querySelectorAll('.genre-pill').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.btn-connect').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.textContent = 'Request Sent!';
+                this.style.background = '#28a745';
+                setTimeout(() => {
+                    this.textContent = 'Connect';
+                    this.style.background = '';
+                }, 2000);
+            });
+        });
+
+        function switchToSignup() {
+            var loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+            loginModal.hide();
+            setTimeout(() => {
+                var signupModal = new bootstrap.Modal(document.getElementById('signupModal'));
+                signupModal.show();
+            }, 300);
+        }
+
+        function switchToLogin() {
+            var signupModal = bootstrap.Modal.getInstance(document.getElementById('signupModal'));
+            signupModal.hide();
+            setTimeout(() => {
+                var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+                loginModal.show();
+            }, 300);
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showUserMenu(data.user.name);
+                } else {
+                    alert(data.error);
+                }
+            } catch (err) {
+                alert('Login failed. Please try again.');
+            }
+        });
+
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const user_type = document.getElementById('userType').value;
+            
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password, user_type })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showUserMenu(data.user.name);
+                } else {
+                    alert(data.error);
+                }
+            } catch (err) {
+                alert('Registration failed. Please try again.');
+            }
+        });
+
+        async function logout() {
+            try {
+                await fetch('/api/logout', { method: 'POST' });
+            } catch (err) {}
+            hideUserMenu();
+        }
+
+        function googleLogin() {
+            window.location.href = '/api/google/login';
+        }
+
+        function showUserMenu(name) {
+            document.getElementById('userName').textContent = name;
+            document.getElementById('loginNavItem').classList.add('d-none');
+            document.getElementById('joinNavItem').classList.add('d-none');
+            document.getElementById('userMenu').classList.remove('d-none');
+            
+            var modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                var instance = bootstrap.Modal.getInstance(modal);
+                if (instance) instance.hide();
+            });
+        }
+
+        function hideUserMenu() {
+            document.getElementById('loginNavItem').classList.remove('d-none');
+            document.getElementById('joinNavItem').classList.remove('d-none');
+            document.getElementById('userMenu').classList.add('d-none');
+            document.getElementById('loginForm').reset();
+            document.getElementById('signupForm').reset();
+        }
+
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/me');
+                const data = await response.json();
+                if (data.user) {
+                    showUserMenu(data.user.name);
+                    if (new URLSearchParams(window.location.search).get('logged_in') === 'true') {
+                        window.history.replaceState({}, '', '/');
+                    }
+                }
+            } catch (err) {}
+        }
+        checkAuth();
+    </script>
+</body>
+</html>
