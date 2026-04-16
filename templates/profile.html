@@ -210,6 +210,33 @@
             font-size: 0.85rem;
         }
 
+        .track-item {
+            background: var(--highlight);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .track-info strong {
+            font-size: 1.1rem;
+        }
+
+        .track-info p {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
         .genre-tag {
             background: var(--highlight);
             color: var(--text);
@@ -337,6 +364,10 @@
                     <h3><i class="bi bi-music-note-list"></i> Genres</h3>
                     <div id="genresContainer"></div>
                 </div>
+                <div class="profile-card" id="section-tracks">
+                    <h3><i class="bi bi-music-note"></i> My Tracks</h3>
+                    <div id="tracksContainer"></div>
+                </div>
             </div>
             
             <form id="profileForm">
@@ -396,6 +427,16 @@
                 <textarea class="form-control" id="bio" placeholder="Tell others about yourself, your musical journey, what you're looking for..."></textarea>
             </div>
 
+            <div class="profile-card">
+                <h3><i class="bi bi-music-note"></i> Upload Track</h3>
+                <input type="text" class="form-control" id="trackTitle" placeholder="Track title">
+                <textarea class="form-control mt-2" id="trackDescription" placeholder="Description (optional)"></textarea>
+                <input type="file" class="form-control mt-2" id="trackFile" accept="audio/*,video/*">
+                <button type="button" class="btn btn-save mt-2" onclick="uploadTrack()">
+                    <i class="bi bi-upload me-2"></i> Upload
+                </button>
+            </div>
+
             <button type="submit" class="btn btn-save">
                 <i class="bi bi-check-lg me-2"></i> Save Profile
             </button>
@@ -424,8 +465,16 @@
             const urlParams = new URLSearchParams(window.location.search);
             const viewUserId = urlParams.get('id');
             
+            let myUserId = null;
             let user;
-            let isLoggedIn = false;
+            
+            // First check if logged in
+            let meUser = null;
+            try {
+                const meResp = await fetch('/api/me');
+                const meData = await meResp.json();
+                meUser = meData.user;
+            } catch (err) {}
             
             try {
                 if (viewUserId) {
@@ -437,104 +486,22 @@
                         return;
                     }
                     user = data.user;
-                    viewOnly = true;
-                    
-                    // Check if logged in
-                    try {
-                        const meResponse = await fetch('/api/me');
-                        const meData = await meResponse.json();
-                        if (meData.user) {
-                            isLoggedIn = true;
-                            myUserId = meData.user.id;
-                        }
-                    } catch (err) {}
                 } else {
-                    // Viewing own profile - require login
-                    const response = await fetch('/api/me');
-                    const data = await response.json();
-                    if (!data.user) {
+                    // Viewing own profile - must be logged in
+                    if (!meUser) {
                         window.location.href = '/';
                         return;
                     }
-                    user = data.user;
-                    isLoggedIn = true;
-                    myUserId = user.id;
+                    user = meUser;
                 }
             } catch (err) {
                 window.location.href = '/';
                 return;
             }
             
-            if (!isLoggedIn) {
-                // Not logged in - show read-only view, hide edit form
-                document.getElementById('displayName').textContent = user.name || 'No name';
-                document.getElementById('displayType').textContent = user.user_type || 'musician';
-                document.getElementById('profileForm').style.display = 'none';
-                
-                if (user.location) {
-                    document.getElementById('displayLocation').innerHTML = 
-                        '<i class="bi bi-geo-alt-fill me-1"></i>' + user.location;
-                }
-                
-                if (user.avatar_url) {
-                    document.getElementById('avatarContainer').innerHTML = 
-                        `<img src="${user.avatar_url}" alt="Profile" class="profile-avatar" id="profileAvatar" style="display: block; margin: 0 auto;">`;
-                }
-                
-                populateReadOnlyInfo(user);
-                return;
-            }
+            const isOwnProfile = meUser && user.id === meUser.id;
             
-            if (viewOnly && viewUserId != myUserId) {
-                // Viewing other's profile - show read-only view with message button
-                document.getElementById('displayName').textContent = user.name || 'No name';
-                document.getElementById('displayType').textContent = user.user_type || 'musician';
-                document.getElementById('messageBtn').style.display = 'inline-block';
-                window.viewUserId = user.id;
-                
-                if (user.location) {
-                    document.getElementById('displayLocation').innerHTML = 
-                        '<i class="bi bi-geo-alt-fill me-1"></i>' + user.location;
-                }
-                
-                if (user.avatar_url) {
-                    document.getElementById('avatarContainer').innerHTML = 
-                        `<img src="${user.avatar_url}" alt="Profile" class="profile-avatar" id="profileAvatar" style="display: block; margin: 0 auto;" onerror="this.style.display='none'; document.getElementById('avatarPlaceholder').style.display='flex';">` +
-                        `<div class="profile-avatar-placeholder" id="avatarPlaceholder" style="display:none;"><i class="bi bi-person"></i></div>`;
-                }
-
-                if (user.bio) {
-                    document.getElementById('bioContainer').innerHTML = `<p>${user.bio}</p>`;
-                }
-                document.getElementById('bioContainer').style.display = 'none';
-                
-                if (user.instruments) {
-                    document.getElementById('instrumentsContainer').innerHTML = 
-                        user.instruments.split(',').map(i => `<span class="tag">${i.trim()}</span>`).join('');
-                } else {
-                    document.getElementById('section-instruments').style.display = 'none';
-                }
-                
-                if (user.genres) {
-                    document.getElementById('genresContainer').innerHTML = 
-                        user.genres.split(',').map(g => `<span class="tag">${g.trim()}</span>`).join('');
-                } else {
-                    document.getElementById('genresContainer').parentElement.style.display = 'none';
-                }
-                
-                if (viewOnly && viewUserId) {
-                document.getElementById('profileForm').style.display = 'none';
-                return;
-            }
-            
-            document.getElementById('name').value = user.name || '';
-            document.getElementById('userType').value = user.user_type || 'musician';
-            document.getElementById('location').value = user.location || '';
-            document.getElementById('avatarUrl').value = user.avatar_url || '';
-            document.getElementById('instruments').value = user.instruments || '';
-            document.getElementById('bio').value = user.bio || '';
-            window.myUserId = user.id;
-            
+            // Display common info
             document.getElementById('displayName').textContent = user.name || 'No name';
             document.getElementById('displayType').textContent = user.user_type || 'musician';
             
@@ -543,23 +510,9 @@
                     '<i class="bi bi-geo-alt-fill me-1"></i>' + user.location;
             }
             
-if (user.avatar_url) {
-                    document.getElementById('avatarContainer').innerHTML = 
-                        `<img src="${user.avatar_url}" alt="Profile" class="profile-avatar" id="profileAvatar" style="display: block; margin: 0 auto;" onerror="this.style.display='none'; document.getElementById('avatarPlaceholder').style.display='flex';">` +
-                        `<div class="profile-avatar-placeholder" id="avatarPlaceholder" style="display:none;"><i class="bi bi-person"></i></div>`;
-            }
-
-            if (user.genres) {
-                currentGenres = user.genres.split(',').map(g => g.trim()).filter(g => g);
-                updateGenreTags();
-            }
-        }
-        
-        function populateReadOnlyInfo(user) {
-            if (user.bio) {
-                document.getElementById('bioContainer').innerHTML = `<p>${user.bio}</p>`;
-            } else {
-                document.getElementById('bioContainer').style.display = 'none';
+            if (user.avatar_url) {
+                document.getElementById('avatarContainer').innerHTML = 
+                    `<img src="${user.avatar_url}" alt="Profile" class="profile-avatar" id="profileAvatar" style="display: block; margin: 0 auto;">`;
             }
             
             if (user.instruments) {
@@ -574,6 +527,109 @@ if (user.avatar_url) {
                     user.genres.split(',').map(g => `<span class="tag">${g.trim()}</span>`).join('');
             } else {
                 document.getElementById('genresContainer').parentElement.style.display = 'none';
+            }
+            
+            if (!isOwnProfile) {
+                // Other user's profile - show message button, hide edit form
+                document.getElementById('messageBtn').style.display = 'inline-block';
+                window.viewUserId = user.id;
+                document.getElementById('profileForm').style.display = 'none';
+                return;
+            }
+            
+            // Own profile - show edit form
+            document.getElementById('name').value = user.name || '';
+            document.getElementById('userType').value = user.user_type || 'musician';
+            document.getElementById('location').value = user.location || '';
+            document.getElementById('avatarUrl').value = user.avatar_url || '';
+            document.getElementById('instruments').value = user.instruments || '';
+document.getElementById('bio').value = user.bio || '';
+
+if (user.genres) {
+                currentGenres = user.genres.split(',').map(g => g.trim()).filter(g => g);
+                updateGenreTags();
+            }
+            
+            if (user.tracks) {
+                renderTracks(user.tracks);
+            }
+        }
+
+        function renderTracks(tracks) {
+            const container = document.getElementById('tracksContainer');
+            if (!tracks || tracks.length === 0) {
+                container.innerHTML = '<p class="text-muted">No tracks uploaded yet</p>';
+                return;
+            }
+            container.innerHTML = tracks.map(track => `
+                <div class="track-item">
+                    <div class="track-info">
+                        <strong>${track.title}</strong>
+                        ${track.description ? `<p>${track.description}</p>` : ''}
+                    </div>
+                    ${track.file_type === 'video' 
+                        ? `<video src="${track.file_url}" controls style="width: 100%; max-width: 400px;"></video>`
+                        : `<audio src="${track.file_url}" controls style="width: 100%;"></audio>`
+                    }
+                    ${isOwnProfile ? `<button class="btn btn-sm btn-danger" onclick="deleteTrack(${track.id})"><i class="bi bi-trash"></i></button>` : ''}
+                </div>
+            `).join('');
+        }
+
+        async function uploadTrack() {
+            const title = document.getElementById('trackTitle').value;
+            const file = document.getElementById('trackFile').files[0];
+            
+            if (!title || !file) {
+                alert('Please provide a title and file');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('description', document.getElementById('trackDescription').value);
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('/api/tracks', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                    return;
+                }
+                
+                if (data.track) {
+                    const tracks = [data.track];
+                    renderTracks(tracks);
+                    document.getElementById('trackTitle').value = '';
+                    document.getElementById('trackDescription').value = '';
+                    document.getElementById('trackFile').value = '';
+                }
+            } catch (err) {
+                alert('Failed to upload: ' + err.message);
+            }
+        }
+
+        async function deleteTrack(trackId) {
+            if (!confirm('Delete this track?')) return;
+            
+            try {
+                const response = await fetch(`/api/tracks/${trackId}`, { method: 'DELETE' });
+                const data = await response.json();
+                
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                    return;
+                }
+                
+                loadProfile();
+            } catch (err) {
+                alert('Failed to delete: ' + err.message);
             }
         }
 

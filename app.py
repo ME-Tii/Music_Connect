@@ -8,10 +8,11 @@ import sqlite3
 from functools import wraps
 from authlib.integrations.flask_client import OAuth
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 app.secret_key = os.environ.get('SECRET_KEY', 'music-connect-secret-key-2024')
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['PERMANENT_SESSION_LIFETIME'] = 60 * 60 * 24 * 30  # 30 days
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max
 DATABASE = 'music_connect.db'
 
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
@@ -57,6 +58,19 @@ def init_db():
             avatar_url TEXT DEFAULT '',
             genres TEXT DEFAULT '',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS tracks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            title TEXT NOT NULL,
+            description TEXT DEFAULT '',
+            file_url TEXT NOT NULL,
+            file_type TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id)
         )
     ''')
     cursor.execute('''
@@ -317,6 +331,20 @@ def profile():
         if not user:
             return jsonify({'error': 'User not found'}), 404
         
+        cursor.execute('''SELECT id, user_id, title, description, file_url, file_type, created_at 
+                      FROM tracks WHERE user_id = ? ORDER BY created_at DESC''', (user_id,))
+        tracks = []
+        for row in cursor.fetchall():
+            tracks.append({
+                'id': row['id'],
+                'user_id': row['user_id'],
+                'title': row['title'],
+                'description': row['description'] or '',
+                'file_url': row['file_url'],
+                'file_type': row['file_type'],
+                'created_at': row['created_at']
+            })
+        
         return jsonify({
             'user': {
                 'id': user['id'],
@@ -328,7 +356,8 @@ def profile():
                 'location': user['location'] or '',
                 'avatar_url': user['avatar_url'] or '',
                 'genres': user['genres'] or ''
-            }
+            },
+            'tracks': tracks
         })
     
     elif request.method == 'PUT':
@@ -377,6 +406,114 @@ def profile():
                 'genres': user['genres'] or ''
             }
         })
+
+@app.route('/api/tracks', methods=['GET', 'POST'])
+def tracks():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    if request.method == 'GET':
+        user_id = request.args.get('user_id')
+        if user_id:
+            cursor.execute('''SELECT id, user_id, title, description, file_url, file_type, created_at 
+                            FROM tracks WHERE user_id = ? ORDER BY created_at DESC''', (user_id,))
+        else:
+            cursor.execute('''SELECT id, user_id, title, description, file_url, file_type, created_at 
+                            FROM tracks WHERE user_id = ? ORDER BY created_at DESC''', (session['user_id'],))
+        
+        tracks = []
+        for row in cursor.fetchall():
+            tracks.append({
+                'id': row['id'],
+                'user_id': row['user_id'],
+                'title': row['title'],
+                'description': row['description'] or '',
+                'file_url': row['file_url'],
+                'file_type': row['file_type'],
+                'created_at': row['created_at']
+            })
+        conn.close()
+        return jsonify({'tracks': tracks})
+    
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file provided'}), 400
+        
+        file = request.files['file']
+        title = request.form.get('title', '')
+        description = request.form.get('description', '')
+        
+        if not title or file.filename == '':
+            return jsonify({'error': 'Title and file are required'}), 400
+        
+        ALLOWED_EXTENSIONS = {'mp3', 'wav', 'ogg', 'mp4', 'mov', 'webm'}
+        ext = file.filename.rsplit('.', 1)[-1].lower() if '.' in file.filename else ''
+        
+        if ext not in ALLOWED_EXTENSIONS:
+            return jsonify({'error': 'Invalid file type'}), 400
+        
+        file_type = 'audio' if ext in {'mp3', 'wav', 'ogg'} else 'video'
+        
+        import uuid
+        filename = f"{uuid.uuid4()}.{ext}"
+        upload_folder = os.path.join(os.path.dirname(__file__), 'static', 'uploads')
+        os.makedirs(upload_folder, exist_ok=True)
+        file_path = os.path.join(upload_folder, filename)
+        file.save(file_path)
+        
+        file_url = f"/static/uploads/{filename}"
+        
+        cursor.execute('''INSERT INTO tracks (user_id, title, description, file_url, file_type)
+                       VALUES (?, ?, ?, ?, ?)''',
+                   (session['user_id'], title, description, file_url, file_type))
+        conn.commit()
+        
+        cursor.execute('SELECT id, user_id, title, description, file_url, file_type, created_at FROM tracks WHERE id = ?', (cursor.lastrowid,))
+        track = cursor.fetchone()
+        conn.close()
+        
+        return jsonify({
+            'message': 'Track uploaded',
+            'track': {
+                'id': track['id'],
+                'user_id': track['user_id'],
+                'title': track['title'],
+                'description': track['description'] or '',
+                'file_url': track['file_url'],
+                'file_type': track['file_type'],
+                'created_at': track['created_at']
+            }
+        }), 201
+
+@app.route('/api/tracks/<int:track_id>', methods=['DELETE'])
+def delete_track(track_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    cursor.execute('SELECT user_id, file_url FROM tracks WHERE id = ?', (track_id,))
+    track = cursor.fetchone()
+    
+    if not track:
+        return jsonify({'error': 'Track not found'}), 404
+    
+    if track['user_id'] != session['user_id']:
+        return jsonify({'error': 'Not authorized'}), 403
+    
+    file_path = os.path.join(os.path.dirname(__file__), track['file_url'].lstrip('/'))
+    if os.path.exists(file_path):
+        os.remove(file_path)
+    
+    cursor.execute('DELETE FROM tracks WHERE id = ?', (track_id,))
+    conn.commit()
+    conn.close()
+    
+    return jsonify({'message': 'Track deleted'})
 
 @app.route('/api/messages')
 def get_conversations():
