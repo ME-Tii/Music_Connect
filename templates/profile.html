@@ -328,7 +328,7 @@
 
     <div class="profile-content">
             <div id="profileInfo">
-                <div class="profile-card" id="bioContainer"></div>
+                
                 <div class="profile-card" id="section-instruments">
                     <h3><i class="bi bi-music-note-list"></i> Instruments / Skills</h3>
                     <div id="instrumentsContainer"></div>
@@ -505,9 +505,8 @@
 
                 if (user.bio) {
                     document.getElementById('bioContainer').innerHTML = `<p>${user.bio}</p>`;
-                } else {
-                    document.getElementById('bioContainer').style.display = 'none';
                 }
+                document.getElementById('bioContainer').style.display = 'none';
                 
                 if (user.instruments) {
                     document.getElementById('instrumentsContainer').innerHTML = 
