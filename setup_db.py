@@ -48,8 +48,8 @@ def init_db():
         (6, 'Marcus Johnson', 'producer', 'marcus@test.com', 'Electronic music producer with 5+ years experience', 'DAW, Synth, Mix', 'Austin, TX', 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=200&h=200&fit=crop', 'Electronic, Hip Hop, Pop', None),
         (7, 'Emma Rodriguez', 'band', 'emma@test.com', 'Indie rock band looking for new members', 'Guitar, Drums, Bass', 'Seattle, WA', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop', 'Indie, Rock, Alternative', None),
         (8, 'Aisha Patel', 'musician', 'aisha@test.com', 'R&B vocalist and songwriter', 'Vocals, Songwriting', 'Chicago, IL', 'https://images.unsplash.com/photo-1460723237483-7a6dc9d0b212?w=200&h=200&fit=crop', 'R&B, Hip Hop, Soul', None),
-        (9, 'David Kim', 'producer', 'david@test.com', 'Hip hop producer looking for vocalists', 'DAW, Production, Mix', 'Atlanta, GA', 'https://images.unsplash.com/photo-1506794778202-cad845e021b8?w=200&h=200&fit=crop', 'Hip Hop, R&B, Trap', None),
-        (10, 'Luna Vega', 'musician', 'luna@test.com', 'Classical crossover violinist', 'Violin, Piano', 'Boston, MA', 'https://images.unsplash.com/photo-1531746020798-e6953c6bc8e5?w=200&h=200&fit=crop', 'Classical, Neo-Classical, Electronic', None),
+        (9, 'David Kim', 'producer', 'david@test.com', 'Hip hop producer looking for vocalists', 'DAW, Production, Mix', 'Atlanta, GA', 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop', 'Hip Hop, R&B, Trap', None),
+        (10, 'Luna Vega', 'musician', 'luna@test.com', 'Classical crossover violinist', 'Violin, Piano', 'Boston, MA', 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=200&h=200&fit=crop', 'Classical, Neo-Classical, Electronic', None),
     ]
     
     for user in test_users:
