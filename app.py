@@ -32,8 +32,7 @@ if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET:
         client_id=GOOGLE_CLIENT_ID,
         client_secret=GOOGLE_CLIENT_SECRET,
         server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
-        client_kwargs={'scope': 'openid email profile'},
-        fetch_userinfo=False
+        client_kwargs={'scope': 'openid email profile'}
     )
 
 def get_db():
@@ -115,14 +114,31 @@ def google_auth():
         logger.error("Google OAuth not configured")
         return jsonify({'error': 'Google OAuth not configured'}), 500
     try:
-        token = google.authorize_access_token()
-        logger.info(f"Token received: {bool(token)}")
+        # Use basic token endpoint instead of authlib
+        from requests import post
+        token_url = 'https://oauth2.googleapis.com/token'
+        token_data = {
+            'client_id': GOOGLE_CLIENT_ID,
+            'client_secret': GOOGLE_CLIENT_SECRET,
+            'grant_type': 'authorization_code',
+            'code': request.args.get('code'),
+            'redirect_uri': url_for('google_auth', _external=True)
+        }
+        token_resp = post(token_url, data=token_data)
+        token = token_resp.json()
+        logger.info(f"Token response: {token}")
+        
+        if 'access_token' not in token:
+            return jsonify({'error': 'Failed to get token'}), 400
+        
+        access_token = token['access_token']
     except Exception as e:
-        logger.error(f"Error in authorize_access_token: {e}")
+        logger.error(f"Error getting token: {e}")
         return jsonify({'error': str(e)}), 400
     
     # Fetch user info manually
-    userinfo_resp = google.get('https://www.googleapis.com/oauth2/v2/userinfo', token=token)
+    from requests import get
+    userinfo_resp = get('https://www.googleapis.com/oauth2/v2/userinfo', headers={'Authorization': f'Bearer {access_token}'})
     user_info = userinfo_resp.json()
     logger.info(f"User info: {user_info}")
     
