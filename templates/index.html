@@ -399,13 +399,13 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link text-white" href="#">Discover</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="#">Browse</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#">Messages</a></li>
+                    <li class="nav-item user-menu d-none" id="messagesNavItem"><a class="nav-link text-white" href="/messages"><i class="bi bi-chat-dots me-1"></i> Messages</a></li>
                     <li class="nav-item" id="loginNavItem"><a class="nav-link text-white" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></li>
                     <li class="nav-item" id="joinNavItem"><a class="btn btn-connect ms-3" data-bs-toggle="modal" data-bs-target="#loginModal">Join Now</a></li>
                     <li class="nav-item user-menu d-none" id="userMenu">
-                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop" alt="User" class="user-avatar">
-                        <a class="nav-link text-white" id="userName">Profile</a>
-                        <a class="nav-link text-white" onclick="logout()">Logout</a>
+                        <img src="" alt="User" class="user-avatar" id="navAvatar">
+                        <a class="nav-link text-white" href="/profile" id="userName">Profile</a>
+                        <a class="nav-link text-white" href="#" onclick="logout(); return false;">Logout</a>
                     </li>
                 </ul>
             </div>
@@ -450,86 +450,44 @@
             <div class="row g-4">
                 <div class="col-lg-4 col-md-6">
                     <div class="musician-card">
-                        <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=200&h=200&fit=crop" alt="Marcus Chen" class="musician-avatar">
-                        <h4 class="musician-name">Marcus Chen</h4>
-                        <p class="musician-instrument">Electric Guitar & Bass</p>
-                        <p class="musician-location"><i class="bi bi-geo-alt-fill me-1"></i> Los Angeles, CA</p>
-                        <div>
-                            <span class="tag">Rock</span>
-                            <span class="tag">Blues</span>
-                            <span class="tag">Jazz</span>
-                        </div>
-                        <button class="btn btn-connect">Connect</button>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="musician-card">
-                        <img src="https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=200&h=200&fit=crop" alt="Sarah Mitchell" class="musician-avatar">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop" alt="Sarah Mitchell" class="musician-avatar">
                         <h4 class="musician-name">Sarah Mitchell</h4>
-                        <p class="musician-instrument">Vocals & Piano</p>
-                        <p class="musician-location"><i class="bi bi-geo-alt-fill me-1"></i> Nashville, TN</p>
-                        <div>
-                            <span class="tag">Pop</span>
-                            <span class="tag">Indie</span>
-                            <span class="tag">Acoustic</span>
-                        </div>
-                        <button class="btn btn-connect">Connect</button>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="musician-card">
-                        <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop" alt="DJ Phantom" class="musician-avatar">
-                        <h4 class="musician-name">DJ Phantom</h4>
-                        <p class="musician-instrument">Electronic Production</p>
-                        <p class="musician-location"><i class="bi bi-geo-alt-fill me-1"></i> Miami, FL</p>
-                        <div>
-                            <span class="tag">Electronic</span>
-                            <span class="tag">House</span>
-                            <span class="tag">Techno</span>
-                        </div>
-                        <button class="btn btn-connect">Connect</button>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="musician-card">
-                        <img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=200&h=200&fit=crop" alt="Luna Rodriguez" class="musician-avatar">
-                        <h4 class="musician-name">Luna Rodriguez</h4>
-                        <p class="musician-instrument">Cello & Violin</p>
+                        <p class="musician-instrument">Vocals, Piano</p>
                         <p class="musician-location"><i class="bi bi-geo-alt-fill me-1"></i> New York, NY</p>
                         <div>
-                            <span class="tag">Classical</span>
-                            <span class="tag">Film</span>
-                            <span class="tag">Neo-Classical</span>
+                            <span class="tag">Jazz</span>
+                            <span class="tag">R&B</span>
+                            <span class="tag">Pop</span>
                         </div>
-                        <button class="btn btn-connect">Connect</button>
+                        <a href="/profile?id=5" class="btn btn-connect">View Profile</a>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6">
                     <div class="musician-card">
-                        <img src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=200&h=200&fit=crop" alt="Mike Torres" class="musician-avatar">
-                        <h4 class="musician-name">Mike Torres</h4>
-                        <p class="musician-instrument">Drums & Percussion</p>
+                        <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=200&h=200&fit=crop" alt="Marcus Johnson" class="musician-avatar">
+                        <h4 class="musician-name">Marcus Johnson</h4>
+                        <p class="musician-instrument">DAW, Synth, Mix</p>
                         <p class="musician-location"><i class="bi bi-geo-alt-fill me-1"></i> Austin, TX</p>
                         <div>
-                            <span class="tag">Metal</span>
-                            <span class="tag">Rock</span>
-                            <span class="tag">Funk</span>
+                            <span class="tag">Electronic</span>
+                            <span class="tag">Hip Hop</span>
+                            <span class="tag">Pop</span>
                         </div>
-                        <button class="btn btn-connect">Connect</button>
+                        <a href="/profile?id=6" class="btn btn-connect">View Profile</a>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6">
                     <div class="musician-card">
-                        <img src="https://images.unsplash.com/photo-1460723237483-7a6dc9d0b212?w=200&h=200&fit=crop" alt="Aisha Patel" class="musician-avatar">
-                        <h4 class="musician-name">Aisha Patel</h4>
-                        <p class="musician-instrument">Vocals & Songwriting</p>
-                        <p class="musician-location"><i class="bi bi-geo-alt-fill me-1"></i> Chicago, IL</p>
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop" alt="Emma Rodriguez" class="musician-avatar">
+                        <h4 class="musician-name">Emma Rodriguez</h4>
+                        <p class="musician-instrument">Guitar, Drums, Bass</p>
+                        <p class="musician-location"><i class="bi bi-geo-alt-fill me-1"></i> Seattle, WA</p>
                         <div>
-                            <span class="tag">R&B</span>
-                            <span class="tag">Hip Hop</span>
-                            <span class="tag">Soul</span>
+                            <span class="tag">Indie</span>
+                            <span class="tag">Rock</span>
+                            <span class="tag">Alternative</span>
                         </div>
-                        <button class="btn btn-connect">Connect</button>
+                        <a href="/profile?id=7" class="btn btn-connect">View Profile</a>
                     </div>
                 </div>
             </div>
@@ -597,10 +555,6 @@
                             <button type="button" class="btn-social" onclick="googleLogin()">
                                 <i class="bi bi-google"></i>
                                 Google
-                            </button>
-                            <button type="button" class="btn-social" onclick="alert('GitHub OAuth coming soon!')">
-                                <i class="bi bi-github"></i>
-                                GitHub
                             </button>
                         </div>
                     </form>
@@ -754,11 +708,20 @@
             window.location.href = '/api/google/login';
         }
 
-        function showUserMenu(name) {
+        function showUserMenu(name, avatarUrl) {
             document.getElementById('userName').textContent = name;
             document.getElementById('loginNavItem').classList.add('d-none');
             document.getElementById('joinNavItem').classList.add('d-none');
             document.getElementById('userMenu').classList.remove('d-none');
+            document.getElementById('messagesNavItem').classList.remove('d-none');
+            
+            const navAvatar = document.getElementById('navAvatar');
+            if (avatarUrl) {
+                navAvatar.src = avatarUrl;
+                navAvatar.style.display = 'block';
+            } else {
+                navAvatar.style.display = 'none';
+            }
             
             var modals = document.querySelectorAll('.modal');
             modals.forEach(modal => {
@@ -771,6 +734,7 @@
             document.getElementById('loginNavItem').classList.remove('d-none');
             document.getElementById('joinNavItem').classList.remove('d-none');
             document.getElementById('userMenu').classList.add('d-none');
+            document.getElementById('messagesNavItem').classList.add('d-none');
             document.getElementById('loginForm').reset();
             document.getElementById('signupForm').reset();
         }
@@ -780,7 +744,7 @@
                 const response = await fetch('/api/me');
                 const data = await response.json();
                 if (data.user) {
-                    showUserMenu(data.user.name);
+                    showUserMenu(data.user.name, data.user.avatar_url);
                     if (new URLSearchParams(window.location.search).get('logged_in') === 'true') {
                         window.history.replaceState({}, '', '/');
                     }
@@ -788,6 +752,70 @@
             } catch (err) {}
         }
         checkAuth();
+
+        const searchInput = document.querySelector('.search-box input');
+        const searchBox = document.querySelector('.search-box');
+        if (searchInput) {
+            searchInput.addEventListener('input', async function(e) {
+                const query = e.target.value.trim();
+                
+                if (query.length < 1) {
+                    const resultsDiv = searchBox.querySelector('.search-results');
+                    if (resultsDiv) resultsDiv.remove();
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/users/search?q=${encodeURIComponent(query)}`);
+                    const data = await response.json();
+                    
+                    if (data.error) {
+                        console.error(data.error);
+                        return;
+                    }
+
+                    let resultsDiv = searchBox.querySelector('.search-results');
+                    if (!resultsDiv) {
+                        resultsDiv = document.createElement('div');
+                        resultsDiv.className = 'search-results fade-in';
+                        resultsDiv.style.cssText = 'position: absolute; top: 100%; left: 0; right: 0; background: var(--card); border-radius: 12px; margin-top: 8px; max-height: 400px; overflow-y: auto; z-index: 1000;';
+                        searchBox.appendChild(resultsDiv);
+                    }
+
+                    if (data.users.length === 0) {
+                        resultsDiv.innerHTML = '<div style="padding: 16px; color: var(--muted); text-align: center;">No musicians found</div>';
+                    } else {
+                        resultsDiv.innerHTML = data.users.map(user => `
+                            <div class="search-result-item" data-id="${user.id}" style="display: flex; align-items: center; gap: 12px; padding: 12px; text-decoration: none; border-bottom: 1px solid var(--border); cursor: pointer;">
+                                ${user.avatar_url 
+                                    ? `<img src="${user.avatar_url}" alt="${user.name}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">`
+                                    : `<div style="width: 48px; height: 48px; border-radius: 50%; background: var(--highlight); display: flex; align-items: center; justify-content: center;"><i class="bi bi-person" style="font-size: 1.5rem; color: var(--muted);"></i></div>`
+                                }
+                                <div>
+                                    <div style="font-weight: 600; color: var(--text);">${user.name}</div>
+                                    <div style="font-size: 0.85rem; color: var(--muted);">${user.instruments || 'Musician'} ${user.location ? '• ' + user.location : ''}</div>
+                                    ${user.genres ? `<div style="font-size: 0.75rem; color: var(--highlight); margin-top: 4px;">${user.genres}</div>` : ''}
+                                </div>
+                            </div>
+                        `).join('');
+                        resultsDiv.querySelectorAll('.search-result-item').forEach(item => {
+                            item.addEventListener('click', () => {
+                                window.location.href = '/profile?id=' + item.dataset.id;
+                            });
+                        });
+                    }
+                } catch (err) {
+                    console.error('Search failed:', err);
+                }
+            });
+
+            searchInput.addEventListener('blur', () => {
+                setTimeout(() => {
+                    const resultsDiv = searchBox.querySelector('.search-results');
+                    if (resultsDiv) resultsDiv.remove();
+                }, 200);
+            });
+        }
     </script>
 </body>
 </html>
