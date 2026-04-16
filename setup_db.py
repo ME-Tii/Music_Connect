@@ -35,6 +35,9 @@ def init_db():
         )
     ''')
     
+    # Delete existing users to refresh data
+    cursor.execute('DELETE FROM users')
+    
     # Seed test users
     test_users = [
         (1, 'Thomas Seitz', 'musician', 'thomasseitz22@gmail.com', 'Hi its me.', 'Bass Guitar Keyboard', 'Munic', 'https://lh3.googleusercontent.com/a/ACg8ocIrhZaOzPMm0yOhVnS9C-zRQBjzntpxVEdml-1fmjUw567Xenob=s96-c', 'Hip Hop, Reggae, Jazz', None),
@@ -51,8 +54,8 @@ def init_db():
     
     for user in test_users:
         cursor.execute('''
-            INSERT OR IGNORE INTO users (id, name, user_type, email, bio, instruments, location, avatar_url, genres, google_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT OR REPLACE INTO users (id, name, user_type, email, bio, instruments, location, avatar_url, genres, google_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', user)
     
     conn.commit()
