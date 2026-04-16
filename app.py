@@ -17,8 +17,11 @@ DATABASE = 'music_connect.db'
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
 GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '')
 
-print(f"GOOGLE_CLIENT_ID loaded: {bool(GOOGLE_CLIENT_ID)}")
-print(f"GOOGLE_CLIENT_SECRET loaded: {bool(GOOGLE_CLIENT_SECRET)}")
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.info(f"GOOGLE_CLIENT_ID: {GOOGLE_CLIENT_ID[:20]}..." if GOOGLE_CLIENT_ID else "GOOGLE_CLIENT_ID: NOT SET")
+logger.info(f"GOOGLE_CLIENT_SECRET: {GOOGLE_CLIENT_SECRET[:10]}..." if GOOGLE_CLIENT_SECRET else "GOOGLE_CLIENT_SECRET: NOT SET")
 
 oauth = OAuth(app)
 google = None
@@ -106,10 +109,19 @@ def google_login():
 
 @app.route('/api/google/auth')
 def google_auth():
+    logger.info("Google auth route called")
     if not google:
+        logger.error("Google OAuth not configured")
         return jsonify({'error': 'Google OAuth not configured'}), 500
-    token = google.authorize_access_token()
+    try:
+        token = google.authorize_access_token()
+        logger.info(f"Token received: {token}")
+    except Exception as e:
+        logger.error(f"Error in authorize_access_token: {e}")
+        return jsonify({'error': str(e)}), 400
+    
     user_info = token.get('userinfo')
+    logger.info(f"User info: {user_info}")
     
     if not user_info:
         return jsonify({'error': 'Failed to get user info'}), 400
