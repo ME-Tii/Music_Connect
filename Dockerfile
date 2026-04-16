@@ -7,6 +7,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+# Initialize database with test users
+RUN python setup_db.py
+
 EXPOSE 5000
 
 ENV FLASK_APP=app.py
