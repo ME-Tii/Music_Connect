@@ -32,7 +32,8 @@ if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET:
         client_id=GOOGLE_CLIENT_ID,
         client_secret=GOOGLE_CLIENT_SECRET,
         server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
-        client_kwargs={'scope': 'openid email profile'}
+        client_kwargs={'scope': 'openid email profile'},
+        fetch_userinfo=False
     )
 
 def get_db():
@@ -115,12 +116,14 @@ def google_auth():
         return jsonify({'error': 'Google OAuth not configured'}), 500
     try:
         token = google.authorize_access_token()
-        logger.info(f"Token received: {token}")
+        logger.info(f"Token received: {bool(token)}")
     except Exception as e:
         logger.error(f"Error in authorize_access_token: {e}")
         return jsonify({'error': str(e)}), 400
     
-    user_info = token.get('userinfo')
+    # Fetch user info manually
+    userinfo_resp = google.get('https://www.googleapis.com/oauth2/v2/userinfo', token=token)
+    user_info = userinfo_resp.json()
     logger.info(f"User info: {user_info}")
     
     if not user_info:
